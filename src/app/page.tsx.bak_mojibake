@@ -1,0 +1,610 @@
+﻿"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { motion, useReducedMotion } from "framer-motion";
+import { models } from "@/data/models";
+import { ModelCard } from "@/components/ModelCard";
+import VideoHero from "@/components/VideoHero";
+import Reveal from "@/components/Reveal";
+import StaggerGrid from "@/components/StaggerGrid";
+
+const hpBuckets = [
+  { label: "Р’СЃРµ", value: "all" },
+  { label: "РґРѕ 120", value: "lte120" },
+  { label: "121-170", value: "121_170" },
+  { label: "171+", value: "gte171" },
+] as const;
+
+const seriesOptions = [
+  { label: "Р’СЃРµ", value: "all" },
+  { label: "Field", value: "Field" },
+  { label: "Heavy", value: "Heavy" },
+  { label: "Pro", value: "Pro" },
+] as const;
+
+export default function Home() {
+  const reduceMotion = useReducedMotion() ?? false;
+  const [hp, setHp] = useState<(typeof hpBuckets)[number]["value"]>("all");
+  const [series, setSeries] = useState<(typeof seriesOptions)[number]["value"]>("all");
+
+  const filtered = useMemo(() => {
+    return models.filter((m) => {
+      const okSeries = series === "all" ? true : m.series === series;
+      const okHp =
+        hp === "all"
+          ? true
+          : hp === "lte120"
+            ? m.hp <= 120
+            : hp === "121_170"
+              ? m.hp >= 121 && m.hp <= 170
+              : hp === "gte171"
+                ? m.hp >= 171
+                : true;
+
+      return okSeries && okHp;
+    });
+  }, [hp, series]);
+
+  const featured = useMemo(() => {
+    const order = ["tp-210-heavy", "tp-180-pro"];
+    return order
+      .map((s) => models.find((m) => m.slug === s))
+      .filter(Boolean) as typeof models;
+  }, []);
+
+  const mapPoints: ReadonlyArray<{ id: string; x: number; y: number; pulse?: boolean }> = [
+    { id: "nw1", x: 23, y: 30, pulse: true },
+    { id: "nw2", x: 27, y: 36 },
+    { id: "center1", x: 30, y: 42 },
+    { id: "center2", x: 36, y: 44, pulse: true },
+    { id: "volga1", x: 41, y: 46 },
+    { id: "ural1", x: 50, y: 44, pulse: true },
+    { id: "siberia1", x: 60, y: 46 },
+    { id: "siberia2", x: 70, y: 44 },
+    { id: "east1", x: 80, y: 46 },
+    { id: "far_east", x: 86, y: 50, pulse: true },
+  ];
+
+  return (
+    <main className="-mt-24 min-h-screen bg-transparent text-white">
+      <VideoHero>
+        <div className="mt-10 grid gap-8 sm:mt-12 sm:gap-10 lg:grid-cols-12 lg:items-start">
+          <div className="lg:col-span-7 lg:mt-16 lg:flex lg:h-full lg:flex-col">
+            <div className="fade-in-up logo-glow">
+              <Link href="/technology" className="inline-block">
+                <Image
+                  src="/brand/tractor-plant-logo.png"
+                  alt="Tractor Plant"
+                  width={720}
+                  height={180}
+                  priority
+                  className="h-auto w-[260px] cursor-pointer drop-shadow-[0_10px_40px_rgba(0,0,0,0.45)] sm:w-[360px] md:w-[520px]"
+                />
+              </Link>
+              <h1 className="sr-only">Tractor Plant</h1>
+            </div>
+
+            <p className="mt-4 max-w-2xl text-sm text-white/70 sm:text-base md:text-lg">
+              РџСЂРµРјРёР°Р»СЊРЅС‹Рµ С‚СЂР°РєС‚РѕСЂС‹ РґР»СЏ СЃРµР»СЊСЃРєРѕРіРѕ С…РѕР·СЏР№СЃС‚РІР° Рё СЃС‚СЂРѕРёС‚РµР»СЊСЃС‚РІР°. РЎРѕР·РґР°РЅС‹ РґР»СЏ С‚СЏР¶РµР»РѕР№
+              СЂР°Р±РѕС‚С‹ Рё СЂР°СЃСЃС‡РёС‚Р°РЅС‹ РЅР° РґРѕР»РіРёР№ СЃСЂРѕРє СЃР»СѓР¶Р±С‹.
+            </p>
+
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Link
+                href="/catalog"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 py-3 text-center text-sm font-semibold text-black hover:bg-white/90 active:bg-white/80"
+              >
+                РЎРјРѕС‚СЂРµС‚СЊ РјРѕРґРµР»Рё
+              </Link>
+              <Link
+                href="/configurator"
+                className="inline-flex min-h-11 items-center justify-center rounded-full bg-white/10 px-6 py-3 text-center text-sm font-semibold text-white ring-1 ring-white/15 hover:bg-white/15 active:bg-white/20"
+              >
+                РџРѕРґРѕР±СЂР°С‚СЊ РєРѕРјРїР»РµРєС‚Р°С†РёСЋ
+              </Link>
+            </div>
+
+            <div className="mt-10 grid grid-cols-2 gap-4 sm:grid-cols-4">
+              <Stat value="70+" label="Р›РµС‚ РёРЅР¶РµРЅРµСЂРёРё" />
+              <Stat value="6" label="РњРѕРґРµР»РµР№" />
+              <Stat value="24 РјРµСЃ." label="Р“Р°СЂР°РЅС‚РёСЏ" />
+              <Stat value="120+" label="РЎРµСЂРІРёСЃРѕРІ" />
+            </div>
+          </div>
+
+          <div className="mt-3 flex flex-col md:mt-4 lg:col-span-5 lg:mt-0 lg:h-full">
+            <div className="relative h-[220px] flex-1 overflow-hidden rounded-3xl bg-black/20 ring-1 ring-white/10 sm:h-[260px] lg:h-full lg:min-h-[420px]">
+              <video
+                src="/videos/zastavka.mp4"
+                autoPlay
+                muted
+                loop
+                playsInline
+                className="absolute inset-0 h-full w-full object-cover object-center"
+              />
+              <div className="pointer-events-none absolute inset-0 bg-black/25" />
+            </div>
+
+            <div className="mt-4 rounded-3xl bg-white/5 p-6 ring-1 ring-white/10 backdrop-blur-[2px]">
+              <div className="text-sm font-semibold">Р‘С‹СЃС‚СЂС‹Р№ РїРѕРґР±РѕСЂ</div>
+              <div className="mt-1 text-sm text-white/60">
+                РћС‚С„РёР»СЊС‚СЂСѓР№С‚Рµ РїРѕ СЃРµСЂРёРё Рё РјРѕС‰РЅРѕСЃС‚Рё Рё РѕС‚РєСЂРѕР№С‚Рµ РєР°СЂС‚РѕС‡РєСѓ РїРѕРґС…РѕРґСЏС‰РµР№ РјРѕРґРµР»Рё.
+              </div>
+
+              <div className="mt-5 flex flex-wrap gap-2">
+                {seriesOptions.map((o) => (
+                  <button
+                    key={o.value}
+                    onClick={() => setSeries(o.value)}
+                    className={`inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm ring-1 ring-white/15 transition ${
+                      series === o.value
+                        ? "bg-white text-black"
+                        : "bg-white/10 text-white hover:bg-white/15 active:bg-white/20"
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-3 flex flex-wrap gap-2">
+                {hpBuckets.map((o) => (
+                  <button
+                    key={o.value}
+                    onClick={() => setHp(o.value)}
+                    className={`inline-flex min-h-11 items-center rounded-full px-4 py-2 text-sm ring-1 ring-white/15 transition ${
+                      hp === o.value
+                        ? "bg-white text-black"
+                        : "bg-white/10 text-white hover:bg-white/15 active:bg-white/20"
+                    }`}
+                  >
+                    {o.label}
+                  </button>
+                ))}
+              </div>
+
+              <div className="mt-5 text-xs text-white/60">
+                РќР°Р№РґРµРЅРѕ: <span className="text-white/80">{filtered.length}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </VideoHero>
+
+      <Reveal className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+        <StaggerGrid className="grid gap-4 md:grid-cols-3" stagger={0.08}>
+          <Feature
+            title="РўСЏРіР° Рё СЃС‚Р°Р±РёР»СЊРЅРѕСЃС‚СЊ"
+            text="РџРѕРґ РЅР°РіСЂСѓР·РєРѕР№ С‚СЂР°РєС‚РѕСЂ СЃРѕС…СЂР°РЅСЏРµС‚ С‚СЏРіРѕРІС‹Рµ С…Р°СЂР°РєС‚РµСЂРёСЃС‚РёРєРё Рё СЃРЅРёР¶Р°РµС‚ РїСЂРѕСЃС‚РѕРё."
+          />
+          <Feature
+            title="РљРѕРјС„РѕСЂС‚ РѕРїРµСЂР°С‚РѕСЂР°"
+            text="РџСЂРѕРґСѓРјР°РЅРЅР°СЏ РєР°Р±РёРЅР°, С€СѓРјРѕРёР·РѕР»СЏС†РёСЏ Рё РєР»РёРјР°С‚-РєРѕРЅС‚СЂРѕР»СЊ РґР»СЏ РґР»РёС‚РµР»СЊРЅС‹С… СЃРјРµРЅ."
+          />
+          <Feature
+            title="РЎРµСЂРІРёСЃРЅР°СЏ СЃРµС‚СЊ"
+            text="Р—Р°РїС‡Р°СЃС‚Рё Рё РїРѕРґРґРµСЂР¶РєР° РґРѕСЃС‚СѓРїРЅС‹ СЂСЏРґРѕРј, С‡С‚РѕР±С‹ С‚РµС…РЅРёРєР° СЂР°Р±РѕС‚Р°Р»Р° Р±РµР· РїР°СѓР·."
+          />
+        </StaggerGrid>
+      </Reveal>
+
+      <section className="mx-auto mt-14 max-w-6xl px-4 sm:px-6">
+        <div className="grid grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          <motion.div
+            className="group relative overflow-hidden rounded-xl ring-1 ring-white/20 transition-all duration-500 hover:shadow-[0_24px_60px_rgba(2,6,23,0.45)] hover:ring-white/35"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={reduceMotion ? undefined : { y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative w-full aspect-[2/3]">
+              <SlideShow
+                images={[
+                  "/images/delivery-image.png",
+                  "/images/delivery-image2.png",
+                  "/images/delivery-image3.png",
+                ]}
+                alt="РљР°Рє РґРѕСЃС‚Р°РІР»СЏРµС‚СЃСЏ"
+                reduceMotion={reduceMotion}
+              />
+              <div className="pointer-events-none absolute inset-y-0 -left-1/2 z-20 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-[transform,opacity] duration-700 ease-out group-hover:translate-x-[260%] group-hover:opacity-100 group-active:translate-x-[260%] group-active:opacity-100" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 z-10 px-6 py-8 text-center text-white transition-all duration-300">
+                <h2 className="text-xl font-semibold transition-transform group-hover:scale-105 group-active:scale-105">
+                  Р”РѕСЃС‚Р°РІРєР° Р±РµР· СЃСЋСЂРїСЂРёР·РѕРІ
+                </h2>
+                <p className="mt-3 text-sm">
+                  РћС‚ Р·Р°РІРѕРґР° РґРѕ РІР°С€РµР№ РїР»РѕС‰Р°РґРєРё вЂ” Р»РѕРіРёСЃС‚РёРєР°, РїРѕРґРіРѕС‚РѕРІРєР° Рё РїРµСЂРµРґР°С‡Р° С‚РµС…РЅРёРєРё.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="group relative overflow-hidden rounded-xl ring-1 ring-white/20 transition-all duration-500 hover:shadow-[0_24px_60px_rgba(2,6,23,0.45)] hover:ring-white/35"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={reduceMotion ? undefined : { y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative w-full aspect-[2/3]">
+              <SlideShow
+                images={[
+                  "/images/collage-image.png",
+                  "/images/collage-image2.png",
+                  "/images/collage-image3.png",
+                ]}
+                alt="Р“РґРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ"
+                reduceMotion={reduceMotion}
+              />
+              <div className="pointer-events-none absolute inset-y-0 -left-1/2 z-20 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-[transform,opacity] duration-700 ease-out group-hover:translate-x-[260%] group-hover:opacity-100 group-active:translate-x-[260%] group-active:opacity-100" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 z-10 px-6 py-8 text-center text-white transition-all duration-300">
+                <h2 className="text-xl font-semibold transition-transform group-hover:scale-105 group-active:scale-105">
+                  Р Р°Р±РѕС‚Р°РµС‚ С‚Р°Рј, РіРґРµ РЅСѓР¶РЅРѕ
+                </h2>
+                <p className="mt-3 text-sm">РЎРµР»СЊСЃРєРѕРµ С…РѕР·СЏР№СЃС‚РІРѕ, СЃС‚СЂРѕРёС‚РµР»СЊСЃС‚РІРѕ Рё РєРѕРјРјСѓРЅР°Р»СЊРЅС‹Рµ Р·Р°РґР°С‡Рё.</p>
+              </div>
+            </div>
+          </motion.div>
+
+          <motion.div
+            className="group relative overflow-hidden rounded-xl ring-1 ring-white/20 transition-all duration-500 hover:shadow-[0_24px_60px_rgba(2,6,23,0.45)] hover:ring-white/35"
+            initial={{ opacity: 0, y: 50 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            whileHover={reduceMotion ? undefined : { y: -6, scale: 1.01 }}
+            whileTap={{ scale: 0.99 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+          >
+            <div className="relative w-full aspect-[2/3]">
+              <SlideShow
+                images={[
+                  "/images/testing-image.png",
+                  "/images/testing-image2.png",
+                  "/images/testing-image3.png",
+                ]}
+                alt="РСЃРїС‹С‚Р°РЅРёСЏ"
+                reduceMotion={reduceMotion}
+              />
+              <div className="pointer-events-none absolute inset-y-0 -left-1/2 z-20 w-1/2 rotate-12 bg-gradient-to-r from-transparent via-white/10 to-transparent opacity-0 transition-[transform,opacity] duration-700 ease-out group-hover:translate-x-[260%] group-hover:opacity-100 group-active:translate-x-[260%] group-active:opacity-100" />
+              <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/70 via-black/25 to-transparent" />
+              <div className="absolute bottom-0 left-0 right-0 z-10 px-6 py-8 text-center text-white transition-all duration-300">
+                <h2 className="text-xl font-semibold transition-transform group-hover:scale-105 group-active:scale-105">
+                  РџСЂРѕРІРµСЂРµРЅРѕ РЅР°РіСЂСѓР·РєРѕР№
+                </h2>
+                <p className="mt-3 text-sm">РСЃРїС‹С‚Р°РЅРёСЏ Рё РєРѕРЅС‚СЂРѕР»СЊ РєР°С‡РµСЃС‚РІР° РїРµСЂРµРґ РїРµСЂРµРґР°С‡РµР№ РєР»РёРµРЅС‚Сѓ.</p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      <Reveal className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
+        <div className="flex items-end justify-between gap-4">
+          <h2 className="text-xl font-semibold sm:text-2xl">Р›РёРЅРµР№РєРё</h2>
+          <Link href="/catalog" className="text-sm text-white/70 hover:text-white">
+            РћС‚РєСЂС‹С‚СЊ РєР°С‚Р°Р»РѕРі в†’
+          </Link>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-3">
+          <SeriesCard
+            title="Field Series"
+            text="РЈРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Рµ С‚СЂР°РєС‚РѕСЂС‹ РґР»СЏ РµР¶РµРґРЅРµРІРЅС‹С… Р·Р°РґР°С‡ Рё РЅРµР±РѕР»СЊС€РёС… С…РѕР·СЏР№СЃС‚РІ."
+            meta="80-140 hp"
+          />
+          <SeriesCard
+            title="Heavy Duty"
+            text="РўСЏРіРѕРІС‹Р№ РєР»Р°СЃСЃ РґР»СЏ С‚СЏР¶РµР»С‹С… СЂР°Р±РѕС‚ Рё РЅР°РІРµСЃРЅРѕРіРѕ РѕР±РѕСЂСѓРґРѕРІР°РЅРёСЏ."
+            meta="150-240 hp"
+          />
+          <SeriesCard
+            title="Pro Cabin"
+            text="РљРѕРјС„РѕСЂС‚ Рё РєРѕРЅС‚СЂРѕР»СЊ: С€СѓРјРѕРёР·РѕР»СЏС†РёСЏ, РєР»РёРјР°С‚, РѕР±Р·РѕСЂ."
+            meta="Premium"
+          />
+        </div>
+      </Reveal>
+
+      <Reveal className="mx-auto max-w-6xl px-4 py-12 sm:px-6">
+        <div className="flex items-end justify-between gap-4">
+          <div>
+            <h2 className="text-xl font-semibold sm:text-2xl">Р РµРєРѕРјРµРЅРґСѓРµРјС‹Рµ РјРѕРґРµР»Рё</h2>
+            <p className="mt-2 text-sm text-white/60">
+              Р”РІР° С„Р»Р°РіРјР°РЅСЃРєРёС… С‚СЂР°РєС‚РѕСЂР° РґР»СЏ СЃР°РјС‹С… РІРѕСЃС‚СЂРµР±РѕРІР°РЅРЅС‹С… Р·Р°РґР°С‡.
+            </p>
+          </div>
+          <Link
+            href="/catalog"
+            className="inline-flex min-h-11 items-center rounded-full bg-white/10 px-4 py-2 text-sm font-semibold text-white ring-1 ring-white/15 hover:bg-white/15 active:bg-white/20"
+          >
+            Р’СЃРµ РјРѕРґРµР»Рё
+          </Link>
+        </div>
+
+        <div className="mt-6 grid gap-4 md:grid-cols-2">
+          {featured.map((m) => (
+            <ModelCard key={m.slug} model={m} />
+          ))}
+        </div>
+      </Reveal>
+
+      <Reveal className="mx-auto max-w-6xl px-4 pb-14 sm:px-6">
+        <div className="rounded-3xl bg-white/5 p-8 text-center ring-1 ring-white/10 md:p-10">
+          <h3 className="text-lg font-semibold sm:text-xl">РќСѓР¶РЅР° РїРѕРјРѕС‰СЊ СЃ РІС‹Р±РѕСЂРѕРј?</h3>
+          <p className="mt-2 text-sm text-white/70">
+            РЎРѕР±РµСЂРёС‚Рµ РєРѕРјРїР»РµРєС‚Р°С†РёСЋ РІ РєРѕРЅС„РёРіСѓСЂР°С‚РѕСЂРµ Рё Р·Р°РїСЂРѕСЃРёС‚Рµ РљРџ. Р¦РµРЅР° вЂ” РїРѕ Р·Р°РїСЂРѕСЃСѓ.
+          </p>
+
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
+            <Link
+              href="/configurator"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-black hover:bg-white/90 active:bg-white/80"
+            >
+              РћС‚РєСЂС‹С‚СЊ РєРѕРЅС„РёРіСѓСЂР°С‚РѕСЂ
+            </Link>
+            <Link
+              href="/catalog"
+              className="inline-flex min-h-11 items-center justify-center rounded-full bg-white/10 px-6 py-3 text-sm font-semibold text-white ring-1 ring-white/15 hover:bg-white/15 active:bg-white/20"
+            >
+              Р’ РєР°С‚Р°Р»РѕРі
+            </Link>
+          </div>
+        </div>
+      </Reveal>
+
+      <section className="mx-auto max-w-6xl px-6 py-12">
+        <div className="overflow-hidden rounded-3xl bg-white/5 ring-1 ring-white/10 backdrop-blur">
+          <div className="grid gap-0 lg:grid-cols-12">
+            <div className="lg:col-span-7">
+              <div className="relative h-[420px] w-full overflow-hidden rounded-3xl bg-white/5 p-6 ring-1 ring-white/10 md:h-[460px]">
+                <div className="relative h-full w-full overflow-hidden rounded-2xl bg-black/20 ring-1 ring-white/10">
+                  <img
+                    src="/images/map.png"
+                    alt=""
+                    className="pointer-events-none absolute inset-0 h-full w-full object-contain scale-115 opacity-90 brightness-110 contrast-125 [filter:drop-shadow(0_8px_30px_rgba(0,0,0,0.45))]"
+                  />
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_45%_45%,rgba(255,255,255,0.10),transparent_60%)]" />
+                  <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_center,transparent_45%,rgba(0,0,0,0.55)_100%)]" />
+
+                  <div className="absolute inset-0 z-10">
+                    {mapPoints.map((p) => (
+                      <div
+                        key={p.id}
+                        style={{ left: `${p.x}%`, top: `${p.y}%` }}
+                        className="absolute -translate-x-1/2 -translate-y-1/2"
+                      >
+                        <span className="absolute h-2.5 w-2.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500 shadow-[0_0_8px_rgba(255,0,0,0.8)]" />
+                        {p.pulse && (
+                          <span className="absolute h-6 w-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-red-500/30 animate-ping" />
+                        )}
+                      </div>
+                    ))}
+                  </div>
+
+                  <div className="absolute left-4 top-4 z-20 rounded-full bg-black/40 px-3 py-1 text-xs text-white/90 ring-1 ring-white/10">
+                    120+ СЃРµСЂРІРёСЃРЅС‹С… С‚РѕС‡РµРє
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="lg:col-span-5">
+              <div className="h-full p-6 md:p-8">
+                <h3 className="text-xl font-semibold sm:text-2xl">Р“РµРѕРіСЂР°С„РёСЏ Рё СЃРµСЂРІРёСЃРЅР°СЏ СЃРµС‚СЊ</h3>
+                <p className="mt-3 text-sm text-white/70 sm:text-base">
+                  Р”РёР»РµСЂС‹, СЃРµСЂРІРёСЃ Рё Р·Р°РїС‡Р°СЃС‚Рё вЂ” СЂСЏРґРѕРј СЃ РІР°С€РµР№ С‚РµС…РЅРёРєРѕР№.
+                </p>
+
+                <div className="mt-6 grid gap-3 sm:grid-cols-2">
+                  <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1">
+                    <div className="text-2xl font-semibold">120+</div>
+                    <div className="mt-2 text-sm text-white/65">РЎРµСЂРІРёСЃРЅС‹С… С‚РѕС‡РµРє</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1">
+                    <div className="text-2xl font-semibold">48 ч</div>
+                    <div className="mt-2 text-sm text-white/65">РЎСЂРµРґРЅСЏСЏ Р»РѕРіРёСЃС‚РёРєР°</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1">
+                    <div className="text-2xl font-semibold">24/7</div>
+                    <div className="mt-2 text-sm text-white/65">РџРѕРґРґРµСЂР¶РєР° Рё РєРѕРЅСЃСѓР»СЊС‚Р°С†РёРё</div>
+                  </div>
+                  <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10 transition-transform duration-300 hover:-translate-y-1">
+                    <div className="text-2xl font-semibold">12</div>
+                    <div className="mt-2 text-sm text-white/65">Р РµРіРёРѕРЅР°Р»СЊРЅС‹С… С…Р°Р±РѕРІ</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <footer className="border-t border-white/10 bg-transparent">
+        <div className="mx-auto flex max-w-6xl flex-col gap-2 px-4 py-10 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <div>{"\u00A9"} {new Date().getFullYear()} Tractor Plant</div>
+          <div className="flex gap-4">
+            <Link href="/catalog" className="hover:text-white">
+              РљР°С‚Р°Р»РѕРі
+            </Link>
+            <Link href="/configurator" className="hover:text-white">
+              РљРѕРЅС„РёРіСѓСЂР°С‚РѕСЂ
+            </Link>
+            <Link href="/contacts" className="hover:text-white">
+              РљРѕРЅС‚Р°РєС‚С‹
+            </Link>
+          </div>
+        </div>
+      </footer>
+    </main>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-2xl bg-white/5 p-5 ring-1 ring-white/10">
+      <div className="text-xl font-semibold">{value}</div>
+      <div className="mt-2 text-sm text-white/60">{label}</div>
+    </div>
+  );
+}
+
+function Feature({ title, text }: { title: string; text: string }) {
+  const reduceMotion = useReducedMotion() ?? false;
+
+  return (
+    <motion.div
+      whileHover={reduceMotion ? undefined : { y: -3 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.25, ease: [0.21, 0.98, 0.23, 0.99] }}
+      className="
+        group relative overflow-hidden rounded-3xl bg-white/[0.03] p-6
+        ring-1 ring-white/10 backdrop-blur-[2px]
+      "
+    >
+      <div
+        className="
+          pointer-events-none absolute -inset-24 opacity-0 transition-opacity duration-300
+          bg-[radial-gradient(circle_at_30%_20%,rgba(255,255,255,0.12),transparent_55%)]
+          group-hover:opacity-100
+        "
+      />
+
+      <div className="text-sm font-semibold">{title}</div>
+      <p className="mt-3 text-sm text-white/70">{text}</p>
+    </motion.div>
+  );
+}
+
+function SeriesCard({
+  title,
+  text,
+  meta,
+}: {
+  title: string;
+  text: string;
+  meta: string;
+}) {
+  const reduceMotion = useReducedMotion() ?? false;
+
+  return (
+    <motion.div
+      whileHover={reduceMotion ? undefined : { y: -3 }}
+      whileTap={{ scale: 0.99 }}
+      transition={{ duration: 0.25, ease: [0.21, 0.98, 0.23, 0.99] }}
+      className="
+        group relative overflow-hidden rounded-3xl bg-white/5 p-6
+        ring-1 ring-white/10
+      "
+    >
+      <div
+        className="
+          pointer-events-none absolute -inset-24 opacity-0 transition-opacity duration-300
+          bg-[radial-gradient(circle_at_25%_15%,rgba(255,255,255,0.10),transparent_55%)]
+          group-hover:opacity-100
+        "
+      />
+
+      <div className="text-lg font-semibold">{title}</div>
+      <p className="mt-3 text-sm text-white/70">{text}</p>
+      <div className="mt-3 text-xs text-white/60">{meta}</div>
+    </motion.div>
+  );
+}
+
+function SlideShow({
+  images,
+  alt,
+  reduceMotion = false,
+}: {
+  images: string[];
+  alt: string;
+  reduceMotion?: boolean;
+}) {
+  const [index, setIndex] = useState(0);
+
+  useEffect(() => {
+    if (images.length <= 1 || reduceMotion) return;
+
+    const timer = setInterval(() => {
+      setIndex((prev) => (prev + 1) % images.length);
+    }, 3000);
+
+    return () => clearInterval(timer);
+  }, [images.length, reduceMotion]);
+
+  return (
+    <div className="relative h-full w-full">
+      {images.map((src, i) => (
+        <Image
+          key={src}
+          src={src}
+          alt={alt}
+          fill
+          sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+          className={`object-cover transition-[opacity,transform] duration-700 ${
+            i === index
+              ? "translate-y-0 opacity-80"
+              : reduceMotion
+                ? "translate-y-0 opacity-0"
+                : "translate-y-[6px] opacity-0"
+          }`}
+          style={
+            i === index && !reduceMotion ? { animation: "tpKenBurns 7s linear forwards" } : undefined
+          }
+          loading="lazy"
+        />
+      ))}
+
+      {!reduceMotion && (
+        <div className="pointer-events-none absolute bottom-0 left-0 right-0 z-20 h-[2px] bg-white/15">
+          <div
+            key={index}
+            className="h-full bg-white/50"
+            style={{ animation: "tpSlideProgress 3000ms linear forwards" }}
+          />
+        </div>
+      )}
+
+      <style jsx>{`
+        @keyframes tpKenBurns {
+          from {
+            transform: scale(1);
+          }
+          to {
+            transform: scale(1.06);
+          }
+        }
+
+        @keyframes tpSlideProgress {
+          from {
+            width: 0%;
+          }
+          to {
+            width: 100%;
+          }
+        }
+      `}</style>
+    </div>
+  );
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
