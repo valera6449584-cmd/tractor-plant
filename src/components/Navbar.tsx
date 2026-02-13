@@ -72,7 +72,7 @@ export default function Navbar() {
               >
                 <Link
                   href={item.href}
-                  className={`pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full text-white transition-all duration-300 backdrop-blur-md ${
+                  className={`pointer-events-auto relative flex h-10 w-10 items-center justify-center rounded-full text-white transition-all duration-300 backdrop-blur-md ${
                     active
                       ? "bg-white/20 ring-1 ring-white/25 shadow-[inset_0_0_12px_rgba(255,255,255,0.15)]"
                       : "bg-white/5 ring-1 ring-white/10 hover:scale-110 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)]"
@@ -88,7 +88,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.2 }}
-                      className="pointer-events-none absolute -bottom-8 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black/70 px-3 py-1 text-xs text-white backdrop-blur sm:block"
+                      className="pointer-events-none absolute left-1/2 top-full z-[100] mt-2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black/70 px-3 py-1 text-xs text-white backdrop-blur sm:block"
                     >
                       {item.label}
                     </motion.div>
