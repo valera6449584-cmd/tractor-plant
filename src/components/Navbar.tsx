@@ -88,7 +88,7 @@ export default function Navbar() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: -4 }}
                       transition={{ duration: 0.2 }}
-                      className="pointer-events-none absolute -bottom-8 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-md bg-black/70 px-3 py-1 text-xs text-white backdrop-blur"
+                      className="pointer-events-none absolute -bottom-8 left-1/2 hidden -translate-x-1/2 whitespace-nowrap rounded-md bg-black/70 px-3 py-1 text-xs text-white backdrop-blur sm:block"
                     >
                       {item.label}
                     </motion.div>
