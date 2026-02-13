@@ -48,14 +48,14 @@ export default function Navbar() {
       initial={{ y: -40, opacity: 0 }}
       animate={{ ...navState, y: 0, opacity: 1 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="pointer-events-none fixed left-1/2 top-4 z-[90] flex w-[92%] max-w-[1200px] -translate-x-1/2 items-center rounded-2xl ring-1 ring-white/10 shadow-[0_15px_50px_rgba(0,0,0,0.35)]"
+      className="pointer-events-none fixed left-1/2 top-4 z-[90] flex w-[92%] max-w-[1200px] -translate-x-1/2 items-center overflow-x-hidden rounded-2xl ring-1 ring-white/10 shadow-[0_15px_50px_rgba(0,0,0,0.35)]"
     >
-      <div className="flex w-full items-center justify-between px-6">
-        <Link href="/" className="pointer-events-auto transition-transform duration-300 hover:scale-105">
+      <div className="flex w-full items-center justify-between px-4 sm:px-6">
+        <Link href="/" className="pointer-events-auto shrink-0 transition-transform duration-300 hover:scale-105">
           <img src="/brand/logo.png" alt="" className="h-16 w-auto" />
         </Link>
 
-        <div className="flex items-center gap-2">
+        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -96,7 +96,7 @@ export default function Navbar() {
           })}
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex shrink-0 items-center gap-1 sm:gap-2">
           <Link
             href="/notifications"
             className="pointer-events-auto relative flex h-10 w-10 items-center justify-center rounded-full bg-white/5 text-white ring-1 ring-white/10 backdrop-blur-md transition-all duration-300 hover:scale-110 hover:bg-white/10 hover:shadow-[0_0_15px_rgba(255,255,255,0.15)]"
