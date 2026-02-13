@@ -50,12 +50,15 @@ export default function Navbar() {
       transition={{ duration: 0.6, ease: "easeOut" }}
       className="pointer-events-none fixed left-1/2 top-4 z-[90] flex w-[92%] max-w-[1200px] -translate-x-1/2 items-center overflow-x-hidden rounded-2xl ring-1 ring-white/10 shadow-[0_15px_50px_rgba(0,0,0,0.35)]"
     >
-      <div className="flex w-full items-center justify-between px-4 sm:px-6">
-        <Link href="/" className="pointer-events-auto shrink-0 transition-transform duration-300 hover:scale-105">
+      <div className="flex w-full items-center justify-between gap-1 px-4 sm:gap-0 sm:px-6">
+        <Link
+          href="/"
+          className="pointer-events-auto shrink-0 transition-transform duration-300 hover:scale-105 max-[479px]:hidden"
+        >
           <img src="/brand/logo.png" alt="" className="h-16 w-auto" />
         </Link>
 
-        <div className="flex min-w-0 items-center gap-1 sm:gap-2">
+        <div className="flex min-w-0 flex-1 items-center justify-center gap-1 sm:gap-2">
           {navItems.map((item) => {
             const Icon = item.icon;
             const active = isActive(item.href);
@@ -109,10 +112,10 @@ export default function Navbar() {
 
           <Link
             href="/login"
-            className="pointer-events-auto inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300 hover:scale-105 hover:bg-white/90 active:bg-white/80"
+            className="pointer-events-auto inline-flex h-10 items-center gap-2 rounded-full bg-white px-4 text-black shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all duration-300 hover:scale-105 hover:bg-white/90 active:bg-white/80 max-[479px]:w-10 max-[479px]:justify-center max-[479px]:px-0"
           >
             <User className="h-4 w-4" />
-            <span className="text-sm font-medium">Вход</span>
+            <span className="text-sm font-medium max-[479px]:hidden">Вход</span>
           </Link>
         </div>
       </div>
